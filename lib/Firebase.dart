@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:sn_progress_dialog/progress_dialog.dart';
 import 'dart:io';
 
 import 'constants.dart';
@@ -15,6 +16,7 @@ class FirebaseService {
 
   uploadData(BuildContext context, File imageFile, double latitude,
       double longitude, String timestamp) async {
+
     await firestore.collection(kData).doc(timestamp).set({
       kLatitude: latitude, kLongitude: longitude
     });

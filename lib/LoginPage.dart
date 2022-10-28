@@ -6,6 +6,8 @@ import 'package:flutter_internship_submission/constants.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+
+import 'package:sn_progress_dialog/progress_dialog.dart';
 /** Login Page
  * handles clicking image with image_picker widget
  * handles location service with geolocator widget
@@ -52,6 +54,8 @@ class _LoginPageState extends State<LoginPage> {
               RoundedButton(color: Colors.white, title: "Login", onPressed: ()async{
                 try {
                       if(isImagePicked){
+                        ProgressDialog pd = ProgressDialog(context: context);
+                        pd.show(max: 100, msg: 'Please Wait',progressBgColor: kSecondaryColor,progressValueColor: kPrimaryColor,);
                       //Firebase Anonymous sign in
                       final userCredential = await FirebaseAuth.instance.signInAnonymously();
                       //Location
@@ -63,7 +67,10 @@ class _LoginPageState extends State<LoginPage> {
                       String timeStamp=DateTime.now().toString();
                       print("latitude"+latitude.toString()+"longitude"+longitude.toString()+"timestamp"+timeStamp);
                       if(await FirebaseService().uploadData(context, imageFile!, latitude, longitude, timeStamp)==true)
-                      Navigator.pushNamed(context, HomePage.id);
+                        {
+                          pd.close();
+                      Navigator.pushNamed(context, HomePage.id);}
+
                       }else{print("Image is not picked");}
 
                 } on FirebaseAuthException catch (e) {

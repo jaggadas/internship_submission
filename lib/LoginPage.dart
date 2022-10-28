@@ -29,54 +29,56 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: kPrimaryColor,
       appBar: AppBar(backgroundColor: kPrimaryColor,title: Text("Login"),elevation: 0,),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(decoration: BoxDecoration(color: kSecondaryColor,borderRadius: BorderRadius.circular(20)),
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [
-            isImagePicked?
-            Container(width: double.infinity,height: 500,decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),image: DecorationImage(fit: BoxFit.cover, image: FileImage(imageFile!,))),)
-                :
-            Container(child: Image.asset("assets/user_image.png")),
-            RoundedButton(color: Colors.white, title: "Take Photo", onPressed: ()async{
-                  final ImagePicker _picker = ImagePicker();
-                  // Pick an image
-                  final image = await _picker.pickImage(source: ImageSource.camera);
-                  imageFile=File(image!.path);
-                  setState(() {
-                    isImagePicked=true;
-                  });
-                }),
-            RoundedButton(color: Colors.white, title: "Login", onPressed: ()async{
-              try {
-                    if(isImagePicked){
-                    //Firebase Anonymous sign in
-                    final userCredential = await FirebaseAuth.instance.signInAnonymously();
-                    //Location
-                    LocationPermission permission = await Geolocator.requestPermission();
-                    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
-                    double longitude=position.longitude;
-                    double latitude=position.latitude;
-                    //TimeStamp
-                    String timeStamp=DateTime.now().toString();
-                    print("latitude"+latitude.toString()+"longitude"+longitude.toString()+"timestamp"+timeStamp);
-                    if(await FirebaseService().uploadData(context, imageFile!, latitude, longitude, timeStamp)==true)
-                    Navigator.pushNamed(context, HomePage.id);
-                    }else{print("Image is not picked");}
+          child: Container(decoration: BoxDecoration(color: kSecondaryColor,borderRadius: BorderRadius.circular(20)),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(mainAxisAlignment: MainAxisAlignment.center,children: [
+              isImagePicked?
+              Container(width: double.infinity,height: 500,decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),image: DecorationImage(fit: BoxFit.cover, image: FileImage(imageFile!,))),)
+                  :
+              Container(child: Image.asset("assets/user_image.png")),
+              RoundedButton(color: Colors.white, title: "Take Photo", onPressed: ()async{
+                    final ImagePicker _picker = ImagePicker();
+                    // Pick an image
+                    final image = await _picker.pickImage(source: ImageSource.camera);
+                    imageFile=File(image!.path);
+                    setState(() {
+                      isImagePicked=true;
+                    });
+                  }),
+              RoundedButton(color: Colors.white, title: "Login", onPressed: ()async{
+                try {
+                      if(isImagePicked){
+                      //Firebase Anonymous sign in
+                      final userCredential = await FirebaseAuth.instance.signInAnonymously();
+                      //Location
+                      LocationPermission permission = await Geolocator.requestPermission();
+                      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
+                      double longitude=position.longitude;
+                      double latitude=position.latitude;
+                      //TimeStamp
+                      String timeStamp=DateTime.now().toString();
+                      print("latitude"+latitude.toString()+"longitude"+longitude.toString()+"timestamp"+timeStamp);
+                      if(await FirebaseService().uploadData(context, imageFile!, latitude, longitude, timeStamp)==true)
+                      Navigator.pushNamed(context, HomePage.id);
+                      }else{print("Image is not picked");}
 
-              } on FirebaseAuthException catch (e) {
-                switch (e.code) {
-                  case "operation-not-allowed":
-                    print("Anonymous auth hasn't been enabled for this project.");
-                    break;
-                  default:
-                    print("Unknown error.");
+                } on FirebaseAuthException catch (e) {
+                  switch (e.code) {
+                    case "operation-not-allowed":
+                      print("Anonymous auth hasn't been enabled for this project.");
+                      break;
+                    default:
+                      print("Unknown error.");
+                  }
                 }
-              }
-                })
-          ],),
-        ),
+                  })
+            ],),
+          ),
+          ),
         ),
       )
 
